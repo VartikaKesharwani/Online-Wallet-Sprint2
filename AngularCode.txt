@@ -1,0 +1,222 @@
+billpayment.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import {PaydthService} from '../paydth.service';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+
+@Component({
+  selector: 'app-billpayment',
+  templateUrl: './billpayment.component.html',
+  styleUrls: ['./billpayment.component.css']
+})
+export class BillpaymentComponent implements OnInit {
+
+
+amount:number;
+dthbillId :number;
+custname:string;
+custphno:number;
+
+
+    
+  constructor(private paydthService:PaydthService) { }
+
+
+  
+
+  ngOnInit() :void {
+  }
+
+payMoney()
+{
+  this.paydthService.payMoney(this.dthbillId,
+    this.amount).subscribe(
+   data=> {
+   console.log(data);
+   alert("Your bill has been paid:"+this.custname);
+   },
+   (error) => {
+   console.log(error);
+  
+   }
+ );
+}
+}
+*******************************************************************************************
+
+billpayment.component.html
+
+
+<html>
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  </head>
+  <body>
+    <div class="bg-img">
+      <div class="container">
+      <form >
+        <br>
+       <br>
+      <b><h2 style="text-align: center;">Pay DTH Bill from</h2></b> 
+       <b> <h2 style="text-align: center;" >Online Wallet</h2></b>
+      <br>
+      <form #f1="ngForm" method="get" (ngSubmit)="payMoney()">
+        <div class="form-group">
+          <label for="amount"><b>DTH BILL ID:</b></label>
+          <input type="text" class="form-control col-sm-12" [(ngModel)]="dthbillId" name="dthbillId" #UID2="ngModel" required minlength="1">
+          <div *ngIf="f1.submitted && UID2.invalid">
+            <div *ngIf="UID2.errors.required">DTH BILL ID is required</div>
+         </div>
+          <div *ngIf="f1.submitted && UID2 is invalid">
+            <div *ngIf="UID2.errors.minlength">Should enter minimum 1 digit</div>
+          </div>
+          <label for="amount"><b>Customer Name:</b></label>
+          <input type="text" class="form-control col-sm-12" [(ngModel)]="custname" name="custname">
+          <label for="amount"><b>Phone Number:</b></label>
+          <input type="text" class="form-control col-sm-12" [(ngModel)]="custphno" name="custphno" >
+          
+          <label for="amount"><b>Amount:</b></label>
+          <input type="text" class="form-control col-sm-12" [(ngModel)]="amount" name="amount" >
+          
+        </div>
+        <button type="submit" class="btn btn-info" style="align-items: center;">
+          <h2> Click to Pay</h2>
+          </button>
+          </form>
+          </form>
+          </div>
+          </div>
+          </body>
+          </html>
+
+*********************************************************************************************************************
+
+billpayment.component.css
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: lightblue;
+    color: blue;
+    text-align: left;
+}
+
+
+section{display:flex;}
+.leftside{width:45%; height:auto; overflow:hidden; scroll-margin-bottom:40px;}
+
+.rightside img{ width :650px; height:650px;}
+
+.style
+        body, html {
+          height: 100%;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+ .bg-img {
+           /*  The image used  */
+            background-image: url("images/image.png");
+            min-height: 650px;
+        
+          
+           /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+          }
+          
+          /* Add styles to the form container */
+          .container {
+            position: fixed;
+           bottom: 50%;
+           top: 48%;
+           left: 26%;
+           margin-top: -50px;
+            max-width: 500px;;
+            margin-left: -180px;
+            margin-right: auto;
+            height:98%;
+            border:1px solid #8D8D8D;
+            background-color: white;          
+            margin: auto;
+            width: 50%;
+            border: 3px solid rgb(43, 11, 75); 
+          }
+          
+          /* Full-width input fields */
+          input[type=text], input[type=password] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border: none;
+            background: #f1f1f1;
+          }
+          
+          input[type=text]:focus, input[type=password]:focus {
+            background-color: #ddd;
+            outline: none;
+          }
+          
+          /* Set a style for the submit button */
+          .btn {
+            background-color: blueviolet ;
+            color: white;
+            padding: 4px 6px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            opacity: 0.9;
+          }
+          
+          .btn:hover {
+            opacity: 1;
+          }
+
+*****************************************************************************************
+
+paydth.service.ts
+
+
+import { Injectable } from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PaydthService {
+
+  private baseURL="http://localhost:8098/bill/payment"; 
+
+  constructor(private http:HttpClient){ } 
+  payMoney( dthbillId:number, amount:number): Observable<any>{
+    return this.http.get(`${this.baseURL+"/payMoney"}/${dthbillId}/${amount}`);
+
+
+}
+
+
+}
+
+  
+
+************************************************************
+
+app.component.html
+
+<html>
+
+<body>
+  
+    <app-billpayment></app-billpayment>
+  </body>  
+    </html>
+
+
